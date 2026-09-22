@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
-import { CheckCircle2, ClipboardList, Info, Trash2 } from '@lucide/vue';
+import { CheckCircle2, ClipboardList, FileCheck2, Info, Loader2, Trash2 } from '@lucide/vue';
 import { computed, ref, watch } from 'vue';
 import BuscadorCatalogo from '@/components/agente/BuscadorCatalogo.vue';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { update as actualizarBorrador } from '@/routes/agente/borrador';
+import { store as generarOrden } from '@/routes/agente/orden';
+import { moneda } from '@/lib/formato';
 import {
     destroy as quitarPartida,
     update as cambiarPartida,
@@ -29,9 +31,6 @@ const props = defineProps<{
 }>();
 
 const SIN_ASIGNAR = 'sin-asignar';
-
-const moneda = (valor: number): string =>
-    new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(valor);
 
 const cantidades = ref<Record<number, number>>({});
 const fecha = ref<string>('');
@@ -102,6 +101,22 @@ const proveedorSeleccionado = computed(() =>
         ? SIN_ASIGNAR
         : String(props.borrador.proveedor_id),
 );
+
+const generando = ref(false);
+
+const generar = (): void => {
+    generando.value = true;
+
+    router.post(
+        generarOrden.url({ conversacion: props.conversacionId }),
+        {},
+        {
+            onFinish: () => {
+                generando.value = false;
+            },
+        },
+    );
+};
 </script>
 
 <template>
@@ -248,11 +263,14 @@ const proveedorSeleccionado = computed(() =>
 
             <div class="rounded-lg border p-3 text-xs">
                 <div
-                    v-if="borrador.faltantes.length === 0"
+                    v-if="borrador.puede_generarse"
                     class="text-primary flex items-start gap-2"
                 >
                     <CheckCircle2 class="mt-0.5 size-4 shrink-0" />
-                    <span>La lista está completa y lista para generar la orden.</span>
+                    <span>
+                        La lista está completa: genera la orden para asignarle folio, PDF y
+                        correo al proveedor.
+                    </span>
                 </div>
                 <div v-else class="flex items-start gap-2">
                     <Info class="text-muted-foreground mt-0.5 size-4 shrink-0" />
@@ -266,6 +284,16 @@ const proveedorSeleccionado = computed(() =>
                     </div>
                 </div>
             </div>
+
+            <Button
+                class="w-full"
+                :disabled="!borrador.puede_generarse || generando"
+                @click="generar"
+            >
+                <Loader2 v-if="generando" class="size-4 animate-spin" />
+                <FileCheck2 v-else class="size-4" />
+                Generar orden de compra
+            </Button>
         </div>
     </div>
 </template>

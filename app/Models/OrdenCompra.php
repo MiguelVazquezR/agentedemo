@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use RuntimeException;
 
 /**
  * @property int $id
@@ -263,6 +264,113 @@ class OrdenCompra extends Model
     public function scopeGeneradas(Builder $query): void
     {
         $query->whereNotIn('estatus', [EstatusOrdenCompra::Borrador, EstatusOrdenCompra::Completa]);
+    }
+
+    /**
+     * Asigna el folio definitivo y marca la orden como generada.
+     */
+    public function generar(): void
+    {
+        if (! $this->puedeGenerarse()) {
+            throw new RuntimeException('La lista todavía no está completa para generar la orden.');
+        }
+
+        $this->forceFill([
+            'folio' => $this->folio ?? static::siguienteFolio(),
+            'estatus' => EstatusOrdenCompra::Generada,
+            'generada_at' => now(),
+        ])->save();
+    }
+
+    /**
+     * Marca la orden como enviada al proveedor.
+     */
+    public function marcarEnviada(): void
+    {
+        $this->forceFill([
+            'estatus' => EstatusOrdenCompra::Enviada,
+            'enviada_at' => now(),
+        ])->save();
+    }
+
+    /**
+     * Siguiente folio del año en curso, por ejemplo OC-2026-0004.
+     */
+    public static function siguienteFolio(?int $anio = null): string
+    {
+        $prefijo = (string) config('compras.folio.prefijo');
+        $digitos = (int) config('compras.folio.digitos');
+        $anio ??= (int) now()->year;
+
+        $ultimo = static::query()
+            ->where('folio', 'like', "{$prefijo}-{$anio}-%")
+            ->orderByDesc('folio')
+            ->value('folio');
+
+        $consecutivo = $ultimo === null ? 1 : ((int) substr((string) $ultimo, -$digitos)) + 1;
+
+        return sprintf(
+            '%s-%d-%s',
+            $prefijo,
+            $anio,
+            str_pad((string) $consecutivo, $digitos, '0', STR_PAD_LEFT),
+        );
+    }
+
+    /**
+     * Datos de la orden para el listado del historial.
+     *
+     * @return array<string, mixed>
+     */
+    public function paraLista(): array
+    {
+        return [
+            'id' => $this->id,
+            'folio' => $this->folio,
+            'estatus' => $this->estatus->value,
+            'estatus_etiqueta' => $this->estatus->label(),
+            'estatus_clase' => $this->estatus->badgeClass(),
+            'obra' => $this->obra?->nombre,
+            'obra_codigo' => $this->obra?->codigo,
+            'proveedor' => $this->proveedor?->nombre,
+            'fecha_requerida' => $this->fecha_requerida?->toDateString(),
+            'partidas' => $this->items->count(),
+            'total' => (float) $this->total,
+            'generada_en' => $this->generada_at?->toIso8601String(),
+            'enviada_en' => $this->enviada_at?->toIso8601String(),
+        ];
+    }
+
+    /**
+     * Datos completos de la orden para la pantalla de detalle.
+     *
+     * @return array<string, mixed>
+     */
+    public function paraDetalle(): array
+    {
+        return [
+            ...$this->paraLista(),
+            'total_partidas' => $this->items->count(),
+            'obra_id' => $this->obra_id,
+            'obra_cliente' => $this->obra?->cliente,
+            'obra_ubicacion' => $this->obra?->ubicacion(),
+            'proveedor_id' => $this->proveedor_id,
+            'proveedor_contacto' => $this->proveedor?->contacto,
+            'proveedor_email' => $this->proveedor?->email,
+            'proveedor_ciudad' => $this->proveedor?->ciudad,
+            'conversacion_id' => $this->conversacion_id,
+            'condiciones_pago' => $this->condiciones_pago,
+            'observaciones' => $this->observaciones,
+            'descuento' => (float) $this->descuento,
+            'creada_en' => $this->created_at?->toIso8601String(),
+            'partidas' => $this->items
+                ->map(fn (OrdenCompraItem $item): array => $item->paraFrontend())
+                ->all(),
+            'envios' => $this->envios
+                ->map(fn (OrdenCompraEnvio $envio): array => $envio->paraFrontend())
+                ->all(),
+            'puede_enviarse' => $this->proveedor?->email !== null && $this->estatus->estaGenerada(),
+        ];
     }
 
     /**

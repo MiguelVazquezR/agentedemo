@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { LayoutGrid, Sparkles } from '@lucide/vue';
+import { FileText, LayoutGrid, Sparkles } from '@lucide/vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { index as agenteIndex } from '@/routes/agente';
+import { index as ordenesIndex } from '@/routes/ordenes';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
@@ -27,6 +28,11 @@ const mainNavItems: NavItem[] = [
         title: 'Agente IA',
         href: agenteIndex(),
         icon: Sparkles,
+    },
+    {
+        title: 'Órdenes de compra',
+        href: ordenesIndex(),
+        icon: FileText,
     },
 ];
 </script>

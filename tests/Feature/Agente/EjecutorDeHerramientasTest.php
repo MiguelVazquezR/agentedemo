@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\CategoriaMaterial;
 use App\Enums\EstatusOrdenCompra;
 use App\Models\Conversacion;
 use App\Models\Material;
@@ -21,6 +22,7 @@ beforeEach(function () {
         'sku' => 'ACE-001',
         'nombre' => 'Varilla corrugada',
         'familia' => 'Varilla corrugada',
+        'categoria' => CategoriaMaterial::Aceros,
         'medida' => '3/8" (9.5 mm)',
         'presentacion' => null,
         'color' => null,

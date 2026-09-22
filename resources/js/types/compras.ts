@@ -94,3 +94,58 @@ export type RespuestaAgente = {
     borrador: Borrador;
     titulo: string;
 };
+
+export type OrdenResumen = {
+    id: number;
+    folio: string | null;
+    estatus: string;
+    estatus_etiqueta: string;
+    estatus_clase: string;
+    obra: string | null;
+    obra_codigo: string | null;
+    proveedor: string | null;
+    fecha_requerida: string | null;
+    partidas: number;
+    total: number;
+    generada_en: string | null;
+    enviada_en: string | null;
+};
+
+export type EnvioDeOrden = {
+    id: number;
+    destinatario: string;
+    copias: string[];
+    asunto: string;
+    mensaje: string | null;
+    exito: boolean;
+    error: string | null;
+    usuario: string | null;
+    enviado_en: string | null;
+};
+
+export type OrdenDetalle = Omit<OrdenResumen, 'partidas'> & {
+    total_partidas: number;
+    obra_id: number | null;
+    obra_cliente: string | null;
+    obra_ubicacion: string | null;
+    proveedor_id: number | null;
+    proveedor_contacto: string | null;
+    proveedor_email: string | null;
+    proveedor_ciudad: string | null;
+    conversacion_id: number | null;
+    condiciones_pago: string | null;
+    observaciones: string | null;
+    descuento: number;
+    subtotal: number;
+    iva: number;
+    creada_en: string | null;
+    partidas: PartidaBorrador[];
+    envios: EnvioDeOrden[];
+    puede_enviarse: boolean;
+};
+
+export type ResumenDeOrdenes = {
+    cantidad: number;
+    monto: number;
+    por_enviar: number;
+};

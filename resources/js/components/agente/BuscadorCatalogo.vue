@@ -14,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { index as catalogo } from '@/routes/catalogo';
 import { store as agregarPartida } from '@/routes/agente/borrador/partidas';
+import { moneda } from '@/lib/formato';
 import type { MaterialCatalogo } from '@/types';
 
 const props = defineProps<{
@@ -80,8 +81,6 @@ const agregar = (material: MaterialCatalogo): void => {
     );
 };
 
-const precio = (valor: number): string =>
-    new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(valor);
 </script>
 
 <template>
@@ -137,7 +136,7 @@ const precio = (valor: number): string =>
                             {{ material.descripcion }} · {{ material.sku }}
                         </p>
                         <p class="text-muted-foreground text-xs">
-                            {{ precio(material.precio_unitario) }} /
+                            {{ moneda(material.precio_unitario) }} /
                             {{ material.unidad_simbolo }}
                         </p>
                     </div>

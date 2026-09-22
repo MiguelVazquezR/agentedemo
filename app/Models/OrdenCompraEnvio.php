@@ -88,4 +88,24 @@ class OrdenCompraEnvio extends Model
             ->values()
             ->all();
     }
+
+    /**
+     * Datos del envío para el historial de la orden.
+     *
+     * @return array<string, mixed>
+     */
+    public function paraFrontend(): array
+    {
+        return [
+            'id' => $this->id,
+            'destinatario' => $this->destinatario,
+            'copias' => $this->copias(),
+            'asunto' => $this->asunto,
+            'mensaje' => $this->mensaje,
+            'exito' => $this->exito,
+            'error' => $this->error,
+            'usuario' => $this->user?->name,
+            'enviado_en' => ($this->enviado_at ?? $this->created_at)?->toIso8601String(),
+        ];
+    }
 }
