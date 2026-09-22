@@ -22,7 +22,7 @@ return [
     'temperatura' => 0.2,
 
     'catalogo' => [
-        'max_materiales_en_prompt' => 200,
+        'max_materiales_en_prompt' => 260,
         'max_resultados_busqueda' => 12,
     ],
 

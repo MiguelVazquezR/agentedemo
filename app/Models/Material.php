@@ -117,14 +117,13 @@ class Material extends Model
      */
     public function descripcionCompleta(): string
     {
-        $detalles = array_filter([
+        return implode(' · ', array_filter([
+            $this->nombre,
             $this->medida,
             $this->presentacion,
             $this->color,
             $this->marca,
-        ]);
-
-        return trim($this->nombre.($detalles === [] ? '' : ' '.implode(' · ', $detalles)));
+        ]));
     }
 
     /**

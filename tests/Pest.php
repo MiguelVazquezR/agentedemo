@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /*
@@ -47,4 +48,44 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/**
+ * Respuesta simulada del modelo con una llamada a herramienta.
+ *
+ * @param  array<string, mixed>  $argumentos
+ * @return array<string, mixed>
+ */
+function respuestaDeHerramienta(string $herramienta, array $argumentos): array
+{
+    return [
+        'choices' => [[
+            'message' => [
+                'role' => 'assistant',
+                'content' => '',
+                'tool_calls' => [[
+                    'id' => 'call_'.Str::random(10),
+                    'type' => 'function',
+                    'function' => [
+                        'name' => $herramienta,
+                        'arguments' => json_encode($argumentos),
+                    ],
+                ]],
+            ],
+        ]],
+        'usage' => ['prompt_tokens' => 1500, 'completion_tokens' => 40],
+    ];
+}
+
+/**
+ * Respuesta simulada del modelo con el texto final.
+ *
+ * @return array<string, mixed>
+ */
+function respuestaDeTexto(string $contenido): array
+{
+    return [
+        'choices' => [['message' => ['role' => 'assistant', 'content' => $contenido]]],
+        'usage' => ['prompt_tokens' => 1600, 'completion_tokens' => 90],
+    ];
 }

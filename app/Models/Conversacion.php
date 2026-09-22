@@ -35,6 +35,11 @@ class Conversacion extends Model
     use HasFactory;
 
     /**
+     * Título con el que nace una conversación nueva.
+     */
+    public const TITULO_INICIAL = 'Nueva conversación';
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
