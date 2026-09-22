@@ -34,7 +34,7 @@ const handleRegisterSuccess = () => {
         <Heading
             variant="small"
             title="Passkeys"
-            description="Manage your passkeys for passwordless sign-in"
+            description="Administra tus passkeys para entrar sin contraseña"
         />
 
         <div class="overflow-hidden rounded-lg border border-border">
@@ -53,9 +53,9 @@ const handleRegisterSuccess = () => {
                 >
                     <KeyRound class="h-7 w-7 text-muted-foreground" />
                 </div>
-                <p class="font-medium">No passkeys yet</p>
+                <p class="font-medium">Todavía no hay passkeys</p>
                 <p class="mt-1 text-sm text-muted-foreground">
-                    Add a passkey to sign in without a password
+                    Agrega un passkey para entrar sin contraseña
                 </p>
             </div>
         </div>
