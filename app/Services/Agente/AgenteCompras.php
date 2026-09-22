@@ -117,6 +117,7 @@ class AgenteCompras
             'id' => $borrador->id,
             'estatus' => $borrador->estatus->value,
             'estatus_etiqueta' => $borrador->estatus->label(),
+            'estatus_clase' => $borrador->estatus->badgeClass(),
             'puede_generarse' => $borrador->puedeGenerarse(),
             'obra_id' => $borrador->obra_id,
             'proveedor_id' => $borrador->proveedor_id,

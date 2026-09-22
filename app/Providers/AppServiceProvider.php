@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Conversacion;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -24,6 +27,20 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->scopeConversacionesAlUsuario();
+    }
+
+    /**
+     * Cada usuario solo puede abrir las conversaciones que él mismo inició.
+     *
+     * Las invitadas (sin sesión) llegan igual al middleware de autenticación,
+     * que las manda al login.
+     */
+    protected function scopeConversacionesAlUsuario(): void
+    {
+        Route::bind('conversacion', fn (string $valor): Conversacion => Conversacion::query()
+            ->when(auth()->id() !== null, fn (Builder $query) => $query->where('user_id', auth()->id()))
+            ->findOrFail($valor));
     }
 
     /**
