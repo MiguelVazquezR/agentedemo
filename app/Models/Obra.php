@@ -28,6 +28,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read int|null $ordenes_compra_sum_total
  * @property-read int|null $ordenes_compra_count
+ * @property-read int|null $ordenes_generadas_count
+ * @property-read string|null $ordenes_generadas_sum_total
  */
 #[Fillable([
     'codigo',
@@ -89,5 +91,15 @@ class Obra extends Model
     public function ubicacion(): string
     {
         return "{$this->ciudad}, {$this->estado}";
+    }
+
+    /**
+     * Órdenes de compra ya generadas para esta obra.
+     *
+     * @return HasMany<OrdenCompra, $this>
+     */
+    public function ordenesGeneradas(): HasMany
+    {
+        return $this->hasMany(OrdenCompra::class)->generadas();
     }
 }

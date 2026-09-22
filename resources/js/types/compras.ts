@@ -149,3 +149,26 @@ export type ResumenDeOrdenes = {
     monto: number;
     por_enviar: number;
 };
+
+export type ObraResumen = {
+    id: number;
+    codigo: string;
+    nombre: string;
+    cliente: string;
+    ubicacion: string;
+    estatus: string;
+    estatus_etiqueta: string;
+    estatus_clase: string;
+    presupuesto: number;
+    ordenes: number;
+    comprometido: number;
+};
+
+export type ResumenDelPanel = {
+    ordenes: number;
+    monto: number;
+    por_enviar: number;
+    materiales: number;
+    obras: number;
+    conversaciones: number;
+};

@@ -4,6 +4,7 @@ use App\Http\Controllers\Agente\BorradorController;
 use App\Http\Controllers\Agente\CatalogoController;
 use App\Http\Controllers\Agente\ConversacionController;
 use App\Http\Controllers\Agente\MensajeController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Ordenes\EnvioDeOrdenController;
 use App\Http\Controllers\Ordenes\OrdenCompraController;
 use Illuminate\Support\Facades\Route;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::inertia('/', 'Welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     Route::get('catalogo', [CatalogoController::class, 'index'])->name('catalogo.index');
 

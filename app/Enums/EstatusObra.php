@@ -21,6 +21,18 @@ enum EstatusObra: string
     }
 
     /**
+     * Tailwind classes for the badge that renders this status.
+     */
+    public function badgeClass(): string
+    {
+        return match ($this) {
+            self::EnEjecucion => 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300',
+            self::Pausada => 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300',
+            self::Terminada => 'bg-muted text-muted-foreground',
+        };
+    }
+
+    /**
      * Options ready to be consumed by the frontend.
      *
      * @return array<int, array{valor: string, etiqueta: string}>
